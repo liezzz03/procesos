@@ -1,0 +1,3 @@
+C:/universidad/2º/FSO/procesos/cmake-build-debug/CMakeFiles/procesos.dir
+C:/universidad/2º/FSO/procesos/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/universidad/2º/FSO/procesos/cmake-build-debug/CMakeFiles/rebuild_cache.dir

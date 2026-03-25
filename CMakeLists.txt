@@ -3,4 +3,4 @@ project(gestion_reservas_teatro C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(gestion_reservas_teatro test_sala.c sala.c sala.h)
+add_executable(gestion_reservas_teatro main.c sala.c sala.h)

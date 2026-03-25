@@ -1,8 +1,8 @@
-# Install script for directory: C:/universidad/2º/FSO/procesos
+# Install script for directory: C:/universidad/segundo/fso/procesos
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/procesos")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/gestion_reservas_teatro")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -52,6 +52,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "C:/universidad/2º/FSO/procesos/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/universidad/segundo/fso/procesos/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

@@ -76,6 +76,18 @@ int libera_asiento(int id_asiento) {
     return id_persona;
 }
 
+// Libera el asiento dependiendo del id de la persona
+int libera_persona(int id_persona) {
+    if (asientos == NULL || id_persona <= 0) return -1;
+    for (int i = 0; i < n_asientos; i++) {
+        if (asientos[i] == id_persona) {
+            asientos[i] = -1; // Liberamos el asiento
+            return (i + 1);    // Devolvemos el número de asiento que ocupaba (1..N)
+        }
+    }
+    return -1; // No se encontró a esa persona en la sala
+}
+
 // Elimina la sala y libera la memoria
 // Retorna 0 si se elimina correctamente, -1 si no existe la sala
 int elimina_sala() {

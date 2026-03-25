@@ -8,9 +8,9 @@ int main() {
     while (1) {
         printf("\n Creador de sucursales\n");
         printf("Introduce nombre de la ciudad (o 'salir'): ");
-        scanf("%s", nombre_ciudad);
+        scanf(" %[^\n]", nombre_ciudad);
         if (strcmp(nombre_ciudad, "salir") == 0) {
-            printf("Cerrando programa maestro");
+            printf("Cerrando programa maestro\n");
             break;
         }
         printf("Introduce capacidad para %s: ", nombre_ciudad);

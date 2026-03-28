@@ -4,6 +4,8 @@
 
 #ifndef SUCURSAL_H
 #define SUCURSAL_H
-void crea_sucursal(const char* ciudad, int capacidad);
+#include <sys/types.h>
+
+pid_t crea_sucursal(const char* ciudad, int capacidad);
 
 #endif //SUCURSAL_H

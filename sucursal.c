@@ -12,7 +12,7 @@
 #include <sys/types.h>
 
 
-void crea_sucursal(const char* ciudad, int capacidad) {
+pid_t crea_sucursal(const char* ciudad, int capacidad) {
   pid_t pid = fork();
   if (pid < 0) {
     perror("Error al crear el proceso hijo");
@@ -28,9 +28,6 @@ void crea_sucursal(const char* ciudad, int capacidad) {
 	// si execlp falla, error
     perror("Error al ejecutar gnome-terminal");
     exit(1);
-  } else {
-    printf("[Maestro] Sucursal creada en %s con pid: %d\n", ciudad, pid);
-    // por ahora no ponemos wait () aqui porque queremos que el maestro
-    // siga pidiendo ciudades mientras las terminales están abiertas
   }
+  return pid;
 }

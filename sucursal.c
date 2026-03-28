@@ -16,7 +16,7 @@ pid_t crea_sucursal(const char* ciudad, int capacidad) {
   pid_t pid = fork();
   if (pid < 0) {
     perror("Error al crear el proceso hijo");
-	return;
+	return -1;
   }
 
   if (pid == 0) {

@@ -1,11 +1,9 @@
-#include "mini_shell.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "sala.h"
 
 int main(int argc, char *argv[]) {
-    // verificamos que el maestro nos haya pasado ciudad y capacidad
     if (argc < 3) {
         printf("Error: Argumentos insuficientes.\n");
         return -1;
@@ -14,7 +12,6 @@ int main(int argc, char *argv[]) {
     char *ciudad = argv[1];
     int capacidad = atoi(argv[2]);
 
-    // inicializamos la sala en este proceso
     if (crea_sala(capacidad) == -1) {
         printf("Error al crear la sala en %s.\n", ciudad);
         return -1;
@@ -23,8 +20,9 @@ int main(int argc, char *argv[]) {
     char comando[100];
     int parametro;
 
-    printf("Sucursal %s (Capacidad: %d)\n", ciudad, capacidad);
-    printf("Comandos: \n");
+    printf("  Sucursal teatro: %s\n", ciudad);
+    printf("  Capacidad: %d asientos\n", capacidad);
+    printf("Comandos disponibles:\n");
     printf(" - reserva <id_persona>\n");
     printf(" - libera_asiento <num_asiento>\n");
     printf(" - libera_persona <id_persona>\n");
@@ -40,47 +38,48 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(comando, "reserva") == 0) {
             if (scanf("%d", &parametro) == 1) {
-            	int asiento = reserva_asiento(parametro);
-            	if (asiento == -1) printf("No hay asientos libres o ID inválido.\n");
-            	else printf("Asiento %d reservado para persona %d.\n", asiento, parametro);
+                int asiento = reserva_asiento(parametro);
+                if (asiento == -1) printf("No hay asientos libres o ID invalido.\n");
+                else printf("Asiento %d reservado para persona %d.\n", asiento, parametro);
             }
-
-        } else if (strcmp(comando, "libera_asiento") == 0) {
+        }
+        else if (strcmp(comando, "libera_asiento") == 0) {
             if (scanf("%d", &parametro) == 1) {
-            	int persona = libera_asiento(parametro);
-            	if (persona == -1) printf("El asiento %d ya está libre o no existe.\n", parametro);
-           		else printf("Asiento %d liberado (estaba la persona %d).\n", parametro, persona);
-			}
-
-        } else if (strcmp(comando, "libera_persona") == 0) {
+                int persona = libera_asiento(parametro);
+                if (persona == -1) printf("Asiento %d ya estaba libre o no existe.\n", parametro);
+                else printf("Asiento %d liberado (estaba la persona %d).\n", parametro, persona);
+            }
+        }
+        else if (strcmp(comando, "libera_persona") == 0) {
             if (scanf("%d", &parametro) == 1) {
-            	int asiento = libera_asiento(parametro);
-            	if (asiento == -1) printf("La persona %d no se encuentra en esta sala.\n", parametro);
-           		else printf("Persona %d localizada y liberada del asiento %d.\n", parametro, asiento);
-			}
-
-        } else if (strcmp(comando, "estado_asiento") == 0) {
+                int asiento = libera_persona(parametro);
+                if (asiento == -1) printf("La persona %d no esta en la sala.\n", parametro);
+                else printf("Persona %d localizada y liberada del asiento %d.\n", parametro, asiento);
+            }
+        }
+        else if (strcmp(comando, "estado_asiento") == 0) {
             if (scanf("%d", &parametro) == 1) {
-            	int estado = estado_asiento(parametro);
-            	if (estado == -1) printf("Asiento %d: libre.\n", parametro);
-                else if (estado == -2) printf("Asiento fuera de rango.\n");
-            	else printf("Asiento %d ocupado por: %d\n", parametro, estado);
-			}
-
-        } else if (strcmp(comando, "estado_sala") == 0) {
-            printf("Capacidad total: %d\n", capacidad_sala());
-            printf("Asientos libres: %d\n", asientos_libres());
-            printf("Asientos ocupados: %d\n", asientos_ocupados());
-
-        } else if (strcmp(comando, "cerrar_sala") == 0) {
+                int estado = estado_asiento(parametro);
+                if (estado == -1) printf("Asiento %d: LIBRE.\n", parametro);
+                else printf("Asiento %d: OCUPADO por persona %d.\n", parametro, estado);
+            }
+        }
+        else if (strcmp(comando, "estado_sala") == 0) {
+            printf("Capacidad: %d | Libres: %d | Ocupados: %d\n",
+                   capacidad_sala(), asientos_libres(), asientos_ocupados());
+        }
+        else if (strcmp(comando, "cerrar_sala") == 0) {
+            int libres = asientos_libres();
+            printf("Cerrando sucursal %s. Reportando estado al maestro...\n", ciudad);
             elimina_sala();
-            printf("Cerrando sucursal de %s...\n", ciudad);
-            break; // Finaliza el proceso hijo
-        } else {
+
+            // Lógica del RETO: 0 si llena, 1 si quedan libres
+            exit(libres == 0 ? 0 : 1);
+        }
+        else {
             printf("Comando desconocido: %s\n", comando);
             while (getchar() != '\n');
         }
     }
-
     return 0;
 }

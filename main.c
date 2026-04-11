@@ -2,55 +2,73 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <signal.h>
+#include <stdlib.h>
 #include "sucursal.h"
 
-struct {
+typedef struct {
     pid_t pid;
     char ciudad[100];
-} tabla_sucursales[100];
+} Sucursal;
 
-int main() {
-    char nombre_ciudad[100];
-    int capacidad;
-    pid_t pid_finalizado;
-    int total_salas = 0;
+Sucursal tabla[100];
+int total_salas = 0;
 
-    printf("Gestor maestro de sucursales.\n");
-
-    while (1) {
-        //Revisamos si algun hijo ha terminado antes de pedir una nueva ciudad
-        //Usamos un bucle por si han terminado varios a la vez
-        while ((pid_finalizado = waitpid(-1, NULL, WNOHANG))>0) {
-            //Buscamos a quién pertenecía ese PID en nuestra tabla
+void manejador_muerte_hijo(int senal) {
+    int estado;
+    pid_t pid;
+    while ((pid = waitpid(-1, &estado, WNOHANG)) > 0) {
+        if (WIFEXITED(estado)) {
+            int codigo = WEXITSTATUS(estado);
             for (int i = 0; i < total_salas; i++) {
-                if (tabla_sucursales[i].pid == pid_finalizado) {
-                    printf("\n[NOTIFICACIÓN] La sala de '%s' (PID: %d) ha finalizado su ejecución.\n",
-                           tabla_sucursales[i].ciudad, pid_finalizado);
+                if (tabla[i].pid == pid) {
+                    printf("\nNotificación inmediata: Sala '%s' cerrada.\n", tabla[i].ciudad);
+                    if (codigo == 0)
+                        printf("Estado final: éxito total (Sala llena).\n");
+                    else
+                        printf("Estado final: cierre con asientos aún libres.\n");
+                    printf("Introduce nombre de la ciudad (o 'salir'): ");
+                    fflush(stdout);
                     break;
                 }
-            }        }
-        printf("Introduce nombre de la ciudad (o 'salir'): ");
-        //Si el usuario no escribe nada o hay error, salimos
-        if (scanf("%s", nombre_ciudad) != 1) break;
+            }
+        }
+    }
+}
 
-        if (strcmp(nombre_ciudad, "salir") == 0) {
-            printf("Cerrando programa maestro y esperando a las salas restantes\n");
-            //Esperar a que todos terminen antes de cerrar el maestro de verdad
+int main() {
+    struct sigaction sa;
+    sa.sa_handler = manejador_muerte_hijo;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGCHLD, &sa, NULL);
+
+    char ciudad[100];
+    int cap;
+
+    while (1) {
+        printf("Introduce nombre de la ciudad (o 'salir'): ");
+        if (scanf("%s", ciudad) != 1) break;
+
+        if (strcmp(ciudad, "salir") == 0) {
+            printf("Cerrando maestro y esperando a las salas...\n");
             while (wait(NULL) > 0);
             break;
         }
-        printf("Introduce capacidad para %s: ", nombre_ciudad);
-        if (scanf("%d", &capacidad) != 1) {
-            printf("Capacidad no válida.\n");
+
+        printf("Introduce capacidad para %s: ", ciudad);
+        if (scanf("%d", &cap) != 1) {
+            printf("Capacidad no valida.\n");
+            while(getchar() != '\n');
             continue;
         }
-        // Creamos la sucursal y guardamos su información
-        pid_t nuevo_pid = crea_sucursal(nombre_ciudad, capacidad);
-        if (nuevo_pid > 0) {
-            tabla_sucursales[total_salas].pid = nuevo_pid;
-            strcpy(tabla_sucursales[total_salas].ciudad, nombre_ciudad);
+
+        pid_t p = crea_sucursal(ciudad, cap);
+        if (p > 0) {
+            tabla[total_salas].pid = p;
+            strcpy(tabla[total_salas].ciudad, ciudad);
             total_salas++;
-            printf("[Maestro] Sucursal '%s' lanzada con éxito (PID: %d).\n", nombre_ciudad, nuevo_pid);
+            printf("Sucursal '%s' lanzada con PID %d.\n", ciudad, p);
         }
     }
     return 0;
